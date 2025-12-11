@@ -1,0 +1,32 @@
+name: Flight Data - Arrivals
+
+# Trigger this workflow after the departures workflow finishes successfully
+on:
+  workflow_run:
+    workflows: ["Flight Data - Departures"]
+    types:
+      - completed
+
+jobs:
+  run-arrivals-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Arrivals Script
+        env:
+          NEON_DB_URL: ${{ secrets.NEON_DB_URL }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          python arrivals_main.py
