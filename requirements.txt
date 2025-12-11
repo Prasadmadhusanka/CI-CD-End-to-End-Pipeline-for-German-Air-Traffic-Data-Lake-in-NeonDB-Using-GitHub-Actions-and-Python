@@ -1,0 +1,4 @@
+requests>=2.31.0
+pytz>=2023.3
+timezonefinder>=6.3
+psycopg2-binary>=2.9

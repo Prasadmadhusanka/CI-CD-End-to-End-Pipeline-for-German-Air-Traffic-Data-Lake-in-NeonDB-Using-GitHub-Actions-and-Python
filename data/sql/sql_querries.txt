@@ -1,0 +1,77 @@
+CREATE DATABASE germany_air_traffic_db;
+
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+CREATE TABLE airport (
+    iata_code VARCHAR(5) PRIMARY KEY,
+    icao_code VARCHAR(5),
+    name VARCHAR(100),
+    type VARCHAR(20) CHECK (type IN ('small_airport', 'medium_airport', 'large_airport')),
+    geom GEOMETRY(Point, 4326),
+    continent VARCHAR(20) CHECK (continent IN ('Europe', 'Asia', 'Africa', 'North America', 'South America', 'Oceania', 'Antarctica')),
+    country_name VARCHAR(50),
+    iso_country VARCHAR(5),
+    region_name VARCHAR(80),
+    iso_region VARCHAR(10),
+    municipality VARCHAR(50),
+    home_link VARCHAR(150),
+    wikipedia_link VARCHAR(150)
+)
+
+CREATE TABLE departures (
+    departure_id VARCHAR(50) PRIMARY KEY,
+    flight_iataNumber VARCHAR(10),
+    flight_icaoNumber VARCHAR(10),
+    flight_duration INT,
+    status VARCHAR(10),
+    airline_iata_code CHAR(5),
+    airline_icao_code CHAR(5),
+    airline_name VARCHAR(100),
+    departure_baggage VARCHAR(10),
+    departure_delay INT,
+    departure_estimatedTime TIMESTAMP,
+    departure_gate VARCHAR(10),
+    departure_iataCode CHAR(5),
+    departure_icaoCode CHAR(5),
+    departure_scheduledTime TIMESTAMP,
+    departure_terminal VARCHAR(10),
+    arrival_baggage VARCHAR(10),
+    arrival_delay INT,
+    arrival_estimatedTime TIMESTAMP,
+    arrival_gate VARCHAR(10),
+    arrival_iataCode CHAR(5),
+    arrival_icaoCode CHAR(5),
+    arrival_scheduledTime TIMESTAMP,
+    arrival_terminal VARCHAR(10),
+    CONSTRAINT fk_departure_airport FOREIGN KEY (departure_iataCode) REFERENCES airport(iata_code),
+    CONSTRAINT fk_arrival_airport FOREIGN KEY (arrival_iataCode) REFERENCES airport(iata_code)
+);
+
+CREATE TABLE arrivals (
+    arrival_id VARCHAR(50) PRIMARY KEY,
+    flight_iataNumber VARCHAR(10),
+    flight_icaoNumber VARCHAR(10),
+    flight_duration INT,
+    status VARCHAR(10),
+    airline_iata_code CHAR(5),
+    airline_icao_code CHAR(5),
+    airline_name VARCHAR(100),
+    departure_baggage VARCHAR(10),
+    departure_delay INT,
+    departure_estimatedTime TIMESTAMP,
+    departure_gate VARCHAR(10),
+    departure_iataCode CHAR(5),
+    departure_icaoCode CHAR(5),
+    departure_scheduledTime TIMESTAMP,
+    departure_terminal VARCHAR(10),
+    arrival_baggage VARCHAR(10),
+    arrival_delay INT,
+    arrival_estimatedTime TIMESTAMP,
+    arrival_gate VARCHAR(10),
+    arrival_iataCode CHAR(5),
+    arrival_icaoCode CHAR(5),
+    arrival_scheduledTime TIMESTAMP,
+    arrival_terminal VARCHAR(10),
+    CONSTRAINT fk_departure_airport FOREIGN KEY (departure_iataCode) REFERENCES airport(iata_code),
+    CONSTRAINT fk_arrival_airport FOREIGN KEY (arrival_iataCode) REFERENCES airport(iata_code)
+);

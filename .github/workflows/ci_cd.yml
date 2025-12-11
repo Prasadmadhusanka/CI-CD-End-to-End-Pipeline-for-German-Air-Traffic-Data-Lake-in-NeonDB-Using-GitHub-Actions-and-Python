@@ -1,0 +1,35 @@
+name: Flight Data - Departures
+
+# Trigger schedule and manual run
+on:
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  workflow_dispatch:        # manual run option
+
+jobs:
+  run-departure-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      # Step 3: Install dependencies
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      # Step 4: Run departure.py
+      - name: Run Departure Script
+        env:
+          NEON_DB_URL: ${{ secrets.NEON_DB_URL }}
+          API_KEY: ${{ secrets.API_KEY }}
+        run: |
+          python departures_main.py
