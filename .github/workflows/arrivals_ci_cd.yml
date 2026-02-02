@@ -1,32 +1,45 @@
+# .github\workflows\arrivals_ci_cd.yml
+
+# Workflow name displayed in GitHub Actions UI
 name: Flight Data - Arrivals
 
 # Trigger this workflow after the departures workflow finishes successfully
 on:
+  # Workflow trigger: runs when another workflow completes
   workflow_run:
+    # Specify which workflow must complete before this runs
     workflows: ["Flight Data - Departures"]
+    # Only trigger when the departures workflow completes (regardless of success/failure)
     types:
       - completed
 
 jobs:
   run-arrivals-script:
+    # Use the latest Ubuntu runner environment
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Clone the repository to the runner
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+      # Step 2: Set up Python environment with version 3.10
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
+      # Step 3: Install project dependencies from requirements.txt
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
 
+      # Step 4: Execute the arrivals flight data script
       - name: Run Arrivals Script
         env:
+          # Pass Neon database connection URL from GitHub secrets
           NEON_DB_URL: ${{ secrets.NEON_DB_URL }}
+          # Pass flight API key from GitHub secrets
           API_KEY: ${{ secrets.API_KEY }}
         run: |
           python arrivals_main.py

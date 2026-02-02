@@ -1,35 +1,48 @@
+# .github\workflows\departures_ci_cd.yml
+
+# Workflow name displayed in GitHub Actions UI
 name: Flight Data - Departures
 
 # Trigger schedule and manual run
 on:
+  # Automated schedule: runs at 20 minutes past every 6 hours (00:20, 06:20, 12:20, 18:20)
   schedule:
-    - cron: "0 */6 * * *"   # every 6 hours
+    - cron: "20 */6 * * *"   # every 6 hours
+  # Manual trigger: allows running the workflow from GitHub UI
   workflow_dispatch:        # manual run option
 
 jobs:
   run-departure-script:
+    # Use the latest Ubuntu runner environment
     runs-on: ubuntu-latest
 
+    # Prevent multiple instances from running simultaneously
+    concurrency:
+      group: fetch-weather
+      cancel-in-progress: true
+
     steps:
-      # Step 1: Checkout the repo
+      # Step 1: Clone the repository to the runner
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # Step 2: Setup Python
+      # Step 2: Set up Python environment with version 3.10
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      # Step 3: Install dependencies
+      # Step 3: Install project dependencies from requirements.txt
       - name: Install Dependencies
         run: |
           pip install -r requirements.txt
 
-      # Step 4: Run departure.py
+      # Step 4: Execute the departure flight data script
       - name: Run Departure Script
         env:
+          # Pass Neon database connection URL from GitHub secrets
           NEON_DB_URL: ${{ secrets.NEON_DB_URL }}
+          # Pass flight API key from GitHub secrets
           API_KEY: ${{ secrets.API_KEY }}
         run: |
           python departures_main.py
